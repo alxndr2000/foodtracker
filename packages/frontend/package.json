@@ -1,5 +1,5 @@
 {
-  "name": "foodtracker-v1",
+  "name": "@myorg/frontend",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
@@ -8,21 +8,23 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "dev": "expo start --web"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
+    "@myorg/shared": "*",
     "@react-native-picker/picker": "^2.11.2",
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
-    "expo": "~54.0.12",
+    "expo": "54.0.13",
     "expo-constants": "~18.0.9",
     "expo-font": "~14.0.8",
     "expo-haptics": "~15.0.7",
     "expo-image": "~3.0.8",
     "expo-linking": "~8.0.8",
-    "expo-router": "~6.0.10",
+    "expo-router": "~6.0.11",
     "expo-splash-screen": "~31.0.10",
     "expo-status-bar": "~3.0.8",
     "expo-symbols": "~1.0.7",
