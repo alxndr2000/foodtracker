@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const MealSchema = new mongoose.Schema({
 	weekday: Number,
-	mealid: Number,
+	mealid: String,
 });
 
 const WeekSchema = new mongoose.Schema({

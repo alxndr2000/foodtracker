@@ -21,3 +21,21 @@ export async function updateWeek(id: string, week: any) {
 	if (!res.ok) throw new Error("Failed to update week");
 	return res.json();
 }
+
+export async function addMealToWeek(id: string, mealid: string, weekday: number) {
+	const res = await fetch(`${API_BASE_URL}/${id}/meals`, {
+		method: "PUT",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({ mealid, weekday }),
+	});
+	if (!res.ok) throw new Error("Failed to update week");
+	return res.json();
+}
+
+export async function deleteMeal(weekId: string, mealId: string) {
+  const res = await fetch(`${API_BASE_URL}/${weekId}/meals/${mealId}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) throw new Error('Failed to delete meal');
+  return res.json();
+}

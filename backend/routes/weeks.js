@@ -5,7 +5,7 @@ const Week = require("../models/Week.js");
 // Get all weeks
 router.get("/", async (req, res) => {
 	try {
-		const weeks = await Week.find({});
+		const weeks = await Week.find({}).lean();
 		res.json(weeks);
 	} catch (err) {
 		res.status(500).json({ error: err.message });
@@ -15,7 +15,7 @@ router.get("/", async (req, res) => {
 // Get a specific week
 router.get("/:id", async (req, res) => {
 	try {
-		const week = await Week.findById(req.params.id);
+		const week = await Week.findById(req.params.id).lean();
 		if (!week) {
 			return res.status(404).json({ error: "Week not found" });
 		}
@@ -44,6 +44,7 @@ router.put("/:id", async (req, res) => {
 			req.body,
 			{
 				new: true,
+				runValidators: true,
 			}
 		);
 		if (!updatedWeek) {
@@ -75,6 +76,24 @@ router.put("/:id/meals", async (req, res) => {
 		const updatedWeek = await Week.findByIdAndUpdate(
 			req.params.id,
 			{ $push: { meals: meal } },
+			{ new: true, runValidators: true }
+		);
+		if (!updatedWeek) {
+			return res.status(404).json({ error: "Week not found" });
+		}
+		res.json(updatedWeek);
+	} catch (err) {
+		res.status(400).json({ error: err.message });
+	}
+});
+
+// Delete a specific meal from a week by meal _id
+router.delete("/:weekId/meals/:mealId", async (req, res) => {
+	try {
+		const { weekId, mealId } = req.params;
+		const updatedWeek = await Week.findByIdAndUpdate(
+			weekId,
+			{ $pull: { meals: { _id: mealId } } },
 			{ new: true }
 		);
 		if (!updatedWeek) {

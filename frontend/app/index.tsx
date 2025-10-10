@@ -1,6 +1,6 @@
-import WeekTable from "@/components/tables/weektable";
-import { Text, View } from "react-native";
-import { PaperProvider, Provider } from "react-native-paper";
+import WeekTable from "@/components/Tables/weektable";
+import { View } from "react-native";
+import { PaperProvider } from "react-native-paper";
 import { MD3LightTheme as DefaultTheme } from "react-native-paper";
 
 export default function Index() {
@@ -9,11 +9,9 @@ export default function Index() {
 			<View
 				style={{
 					flex: 1,
-					justifyContent: "center",
-					alignItems: "center",
+					padding: 20,
 				}}
 			>
-				<Text>Dummy Main Page</Text>
 				<WeekTable />
 			</View>
 		</PaperProvider>

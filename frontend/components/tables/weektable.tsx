@@ -1,112 +1,135 @@
 import * as React from "react";
-import { Text, Button, TextInput } from "react-native-paper";
-// Import View and ScrollView components from react-native for layout and scrolling
+import { Text } from "react-native-paper";
 import { View, ScrollView } from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import { fetchWeeks, fetchWeek, updateWeek } from "../../api/weeks";
+import {
+	fetchWeeks,
+	fetchWeek,
+	updateWeek,
+	addMealToWeek,
+	deleteMeal,
+} from "../../api/weeks";
+import debounce from "lodash.debounce";
+import WeekPicker from "../Pickers/WeekPicker";
+import AddMealForm from "../Forms/AddMealForm";
+import EditableMealsList from "../EditableLists/EditableMealsList";
 
 // Define the Meal type for clarity
 type Meal = {
-	mealid: number;
+	mealid: string;
 	weekday: number;
+	_id: string;
 };
 
 // Main component for displaying and editing a week's meals
 export default function WeekTable() {
-	// State to hold all available weeks
+	// State: all available weeks
 	const [weeks, setWeeks] = React.useState<any[]>([]);
-	// State to hold the currently selected week's ID
+	// State: selected week's ID
 	const [selectedWeekId, setSelectedWeekId] = React.useState<string>("");
-	// State to hold the currently selected week's data
+	// State: selected week's data
 	const [selectedWeek, setSelectedWeek] = React.useState<any>(null);
-	// State to hold editable meals for the selected week
+	// State: editable meals for the selected week
 	const [editMeals, setEditMeals] = React.useState<Meal[]>([]);
+	// State: new meal input fields
+	const [newMealId, setNewMealId] = React.useState<string>("");
+	const [newMealWeekday, setNewMealWeekday] = React.useState<string>("");
 
-	// Fetch all weeks when the component mounts
+	// Fetch all weeks on mount
 	React.useEffect(() => {
 		fetchWeeks().then(setWeeks).catch(console.error);
 	}, []);
 
-	// Fetch the selected week's data whenever the selectedWeekId changes
+	// Fetch selected week's data when selectedWeekId changes
 	React.useEffect(() => {
+		setSelectedWeek(null);
+		setEditMeals([]);
 		if (selectedWeekId) {
 			fetchWeek(selectedWeekId)
 				.then((data) => {
-					setSelectedWeek(data); // Set the selected week's data
-					// Initialize editable meals from fetched data
+					setSelectedWeek(data);
 					setEditMeals(data.meals.map((m: Meal) => ({ ...m })));
 				})
 				.catch(console.error);
 		}
 	}, [selectedWeekId]);
 
-	// Handle changes to a meal's ID in the editable meals array
+	// Update mealid for a meal in editMeals
 	const handleMealChange = (idx: number, value: string) => {
 		const updated = [...editMeals];
-		updated[idx].mealid = parseInt(value, 10); // Update mealid with new value
-		setEditMeals(updated); // Update state
+		updated[idx].mealid = value;
+		setEditMeals(updated);
 	};
 
-	// Handle updating the week with edited meals
-	const handleUpdate = () => {
-		updateWeek(selectedWeekId, { ...selectedWeek, meals: editMeals })
+	// Debounced update for meals
+	const debouncedUpdate = React.useMemo(
+		() =>
+			debounce((meals: Meal[]) => {
+				if (selectedWeekId && selectedWeek) {
+					updateWeek(selectedWeekId, { ...selectedWeek, meals })
+						.then((data) => {
+							setSelectedWeek(data);
+							setEditMeals(
+								data.meals.map((m: Meal) => ({ ...m }))
+							);
+						})
+						.catch(console.error);
+				}
+			}, 500),
+		[selectedWeekId, selectedWeek]
+	);
+
+	// Trigger debounced update when editMeals changes
+	React.useEffect(() => {
+		if (selectedWeek) {
+			debouncedUpdate(editMeals);
+		}
+		return () => {
+			debouncedUpdate.cancel();
+		};
+	}, [editMeals, debouncedUpdate, selectedWeek]);
+
+	// Add a new meal to the week
+	const handleNewMeal = () => {
+		addMealToWeek(selectedWeekId, newMealId, parseInt(newMealWeekday))
 			.then((data) => {
-				setSelectedWeek(data); // Update selected week with response
-				// Refresh editable meals from updated data
+				setSelectedWeek(data);
 				setEditMeals(data.meals.map((m: Meal) => ({ ...m })));
+				setNewMealId("");
+				setNewMealWeekday("");
 			})
 			.catch(console.error);
 	};
 
-	// Render the component UI
+	const handleDeleteMeal = async (mealId: string) => {
+		if (!selectedWeekId) return;
+		await deleteMeal(selectedWeekId, mealId);
+		setEditMeals(editMeals.filter((m) => m._id !== mealId));
+	};
+
+	// Render UI
 	return (
 		<ScrollView>
-			{/* Picker for selecting a week */}
-			<Picker
-				selectedValue={selectedWeekId}
-				onValueChange={(itemValue) => setSelectedWeekId(itemValue)}
-				style={{ height: 50, width: 250 }}
-			>
-				<Picker.Item label="Select..." value="" />
-				{weeks.map((week) => (
-					<Picker.Item
-						key={week._id}
-						label={week.dateRange}
-						value={week._id}
-					/>
-				))}
-			</Picker>
+			<WeekPicker
+				weeks={weeks}
+				selectedWeekId={selectedWeekId}
+				onChange={setSelectedWeekId}
+			/>
 
-			{/* Display selected week's details and editable meals */}
 			{selectedWeek && (
 				<View>
-					{/* Show the date range for the selected week */}
 					<Text>{selectedWeek.dateRange}</Text>
-					{/* Render editable fields for each meal */}
-					{editMeals.map((meal, idx) => (
-						<View
-							key={idx}
-							style={{
-								flexDirection: "row",
-								alignItems: "center",
-								marginBottom: 8,
-							}}
-						>
-							<Text>Weekday {meal.weekday}: </Text>
-							<TextInput
-								value={meal.mealid.toString()}
-								keyboardType="numeric"
-								onChangeText={(val) =>
-									handleMealChange(idx, val)
-								}
-								style={{ width: 60, marginLeft: 8 }}
-							/>
-						</View>
-					))}
-					{/* Button to update the week with edited meals */}
-					<Button mode="contained" onPress={handleUpdate}>
-						Update Week
-					</Button>
+					<AddMealForm
+						newMealId={newMealId}
+						newMealWeekday={newMealWeekday}
+						setNewMealId={setNewMealId}
+						setNewMealWeekday={setNewMealWeekday}
+						onAdd={handleNewMeal}
+					/>
+					<EditableMealsList
+						meals={editMeals}
+						onMealChange={handleMealChange}
+						onDelete={handleDeleteMeal}
+					/>
 				</View>
 			)}
 		</ScrollView>
