@@ -1,4 +1,4 @@
-import WeekTable from "@/components/Tables/weektable";
+import WeekMenu from "@/components/Menus/WeekMenu";
 import { View } from "react-native";
 import { PaperProvider } from "react-native-paper";
 import { MD3LightTheme as DefaultTheme } from "react-native-paper";
@@ -12,7 +12,7 @@ export default function Index() {
 					padding: 20,
 				}}
 			>
-				<WeekTable />
+				<WeekMenu />
 			</View>
 		</PaperProvider>
 	);
