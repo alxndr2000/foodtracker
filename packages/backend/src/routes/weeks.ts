@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
-import Week, { IWeek, IMeal } from "../models/week";
+import Week from "../models/week";
+import { IWeek, IMeal } from "@myorg/shared";
 
 const router = express.Router();
 

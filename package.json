@@ -1,0 +1,15 @@
+{
+	"private": true,
+	"name": "foodapp-monorepo",
+	"workspaces": [
+		"packages/backend",
+		"packages/frontend",
+		"packages/shared"
+	],
+	"devDependencies": {
+		"concurrently": "^9.2.1"
+	},
+  "scripts": {
+    "dev": "concurrently --names \"BACKEND,FRONTEND\" --prefix-colors \"cyan,magenta\" \"npm:dev --workspace=@myorg/backend\" \"npm:dev --workspace=@myorg/frontend\""
+  }
+}

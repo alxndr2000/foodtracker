@@ -1,14 +1,9 @@
 import { View } from "react-native";
 import { TextInput, Text, Button } from "react-native-paper";
-
-type Meal = {
-	mealid: string;
-	weekday: number;
-	_id: string;
-};
+import { IMeal } from "@myorg/shared";
 
 type EditableMealsListProps = {
-	meals: Meal[];
+	meals: IMeal[];
 	onMealChange: (idx: number, value: string) => void;
 	onDelete: (mealId: string) => void;
 };
