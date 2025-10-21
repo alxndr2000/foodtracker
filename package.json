@@ -10,6 +10,9 @@
 		"concurrently": "^9.2.1"
 	},
   "scripts": {
-    "dev": "concurrently --names \"BACKEND,FRONTEND\" --prefix-colors \"cyan,magenta\" \"npm:dev --workspace=@myorg/backend\" \"npm:dev --workspace=@myorg/frontend\""
+    "dev": "concurrently --names \"BACKEND,FRONTEND\" --prefix-colors \"cyan,magenta\" \"npm:dev --workspace=@myorg/backend\" \"npm:dev --workspace=@myorg/frontend\"",
+	"back": "concurrently --names \"BACKEND\" --prefix-colors \"cyan\" \"npm:dev --workspace=@myorg/backend\"",
+	"front": "concurrently --names \"FRONTEND\" --prefix-colors \"magenta\" \"npm:dev --workspace=@myorg/frontend\"",
+	"build_shared": "npm run build --workspace=@myorg/shared"
   }
 }

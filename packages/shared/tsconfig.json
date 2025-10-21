@@ -3,7 +3,7 @@
     "outDir": "dist",
     "rootDir": "src",
     "declaration": true,
-    "module": "ESNext",
+    "module": "nodenext",
     "target": "ES2020",
     "strict": true,
     "esModuleInterop": true,
