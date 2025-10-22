@@ -54,7 +54,7 @@ router.get("/date/:date", async (req: Request, res: Response) => {
 // Create a new day
 router.post("/", async (req: Request, res: Response) => {
   try {
-    const { date, Meals } = req.body;
+    const { date, meals } = req.body;
 
     if (!date) {
       return res.status(400).json({ error: "Date is required" });
@@ -65,7 +65,7 @@ router.post("/", async (req: Request, res: Response) => {
       return res.status(409).json({ error: "Day already exists for this date" });
     }
 
-    const newDay = new DayModel({ date, Meals });
+    const newDay = new DayModel({ date, meals });
     const saved = await newDay.save();
     res.status(201).json(saved);
   } catch (err: any) {
