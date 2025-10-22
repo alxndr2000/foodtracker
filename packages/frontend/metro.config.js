@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+// disabled due to __dirname usage
 const { getDefaultConfig } = require("expo/metro-config");
 const path = require("path");
 

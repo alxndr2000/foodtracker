@@ -1,41 +1,43 @@
 import WeekSelector from "@/components/input/WeekSelector";
 import WeekView from "@/components/views/WeekView";
-import { get_current_week } from "@myorg/shared/src/util/DateUtils";
+import { getCurrentWeek } from "@myorg/shared/src/util/DateUtils";
 import { addMealToDay, fetchWeekData } from "@/api/weeks";
-import { useEffect, useState } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { useState, useEffect } from "react";
+import { ScrollView } from "react-native";
 import {
 	ActivityIndicator,
 	PaperProvider,
 	Surface,
 	Text,
+	MD3LightTheme as DefaultTheme,
 } from "react-native-paper";
-import { MD3LightTheme as DefaultTheme } from "react-native-paper";
+
 import { IDay } from "@myorg/shared";
 import { styles } from "@/styles/styles";
 
 export default function Index() {
-	const [selectedWeek, setSelectedWeek] = useState<Date>(get_current_week());
+	const [selectedWeek, setSelectedWeek] = useState<Date>(getCurrentWeek());
 	const [days, setDays] = useState<IDay[] | null>(null);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [error, setError] = useState<string | null>(null);
 
-	async function add_meal(date: Date) {
-	try {
-		setLoading(true);
-		setError(null);
+	async function addMeal(date: Date) {
+		try {
+			setLoading(true);
+			setError(null);
 
-		// Call the backend to add the meal
-		await addMealToDay(date);
+			// Call the backend to add the meal
+			await addMealToDay(date);
 
-		// Refetch the week so the UI always reloads fresh
-		const weekData = await fetchWeekData(selectedWeek);
-		setDays(weekData);
-	} catch (err: any) {
-		setError(err.message || "Failed to add meal");
-	} finally {
-		setLoading(false);
-	}
+			// Refetch the week so the UI always reloads fresh
+			const weekData = await fetchWeekData(selectedWeek);
+			setDays(weekData);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (err: any) {
+			setError(err.message || "Failed to add meal");
+		} finally {
+			setLoading(false);
+		}
 	}
 
 	useEffect(() => {
@@ -48,6 +50,7 @@ export default function Index() {
 			try {
 				const weekData = await fetchWeekData(selectedWeek);
 				if (!cancelled) setDays(weekData);
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			} catch (err: any) {
 				if (!cancelled)
 					setError(err.message || "Failed to fetch week data");
@@ -67,7 +70,7 @@ export default function Index() {
 	return (
 		<PaperProvider theme={DefaultTheme}>
 			<ScrollView contentContainerStyle={styles.scrollContent}>
-				<Surface style={styles.surface_main} elevation={1}>
+				<Surface style={styles.surfaceMain} elevation={1}>
 					<WeekSelector
 						selectedWeek={selectedWeek}
 						onChangeWeek={setSelectedWeek}
@@ -79,7 +82,7 @@ export default function Index() {
 						/>
 					)}
 					{error && <Text style={{ color: "red" }}>{error}</Text>}
-					{days && <WeekView days={days} add_meal={add_meal} />}
+					{days && <WeekView days={days} addMeal={addMeal} />}
 				</Surface>
 			</ScrollView>
 		</PaperProvider>

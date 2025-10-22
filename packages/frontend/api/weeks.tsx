@@ -1,6 +1,6 @@
 const API_BASE_URL = "http://localhost:3000/v1/day";
 import { IDay } from "@myorg/shared";
-import { get_week_days, formatLocalDate } from "@myorg/shared/src/util/DateUtils";
+import { getWeekDays, formatLocalDate } from "@myorg/shared/src/util/DateUtils";
 
 export async function addMealToDay(date: Date): Promise<IDay> {
 	// Convert the date into an ISO string without the time part
@@ -21,7 +21,7 @@ export async function addMealToDay(date: Date): Promise<IDay> {
 }
 
 export async function fetchWeekData(startDate: Date): Promise<IDay[]> {
-	const days = get_week_days(startDate);
+	const days = getWeekDays(startDate);
 	const results = await Promise.all(days.map(fetchDayData));
 	return results;
 }
@@ -36,8 +36,8 @@ export async function fetchDayData(date: Date): Promise<IDay> { // I AM GOING TO
 	if (!res.ok) {
 		throw new Error(`Failed to fetch day: ${res.status} ${res.statusText}`);
 	}
-	var data = await res.json();
-	var dayData: IDay = {} as IDay;
+	const data = await res.json();
+	const dayData: IDay = {} as IDay;
 	dayData.date = new Date(dateStr);
 	dayData.meals = [];
 

@@ -4,7 +4,7 @@ export const styles = StyleSheet.create({
 	button: {
 		marginHorizontal: 10,
 	},
-	button_newday: {
+	buttonNewDay: {
 		marginVertical: 5,
 	},
 	container: {
@@ -20,7 +20,7 @@ export const styles = StyleSheet.create({
 		paddingHorizontal: 10,
          // limit max width for better readability on large screens
 	},
-	surface_main: {
+	surfaceMain: {
 		minWidth: 520,
         maxWidth: 600,
 		padding: 20,
@@ -29,7 +29,7 @@ export const styles = StyleSheet.create({
 		flexDirection: "column",
 		borderRadius: 12,
 	},
-	surface_internal: {
+	surfaceInternal: {
 		flex: 1,
 		padding: 20,
 		marginVertical: 5,

@@ -1,4 +1,4 @@
-import { IDay, IMeal } from "@myorg/shared";
+import { IDay } from "@myorg/shared";
 import mongoose, { Schema } from "mongoose";
 import { MealSchema } from "./Meal";
 

@@ -7,12 +7,20 @@
 		"packages/shared"
 	],
 	"devDependencies": {
-		"concurrently": "^9.2.1"
+		"@eslint/js": "^9.38.0",
+		"concurrently": "^9.2.1",
+		"eslint": "^9.38.0",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-react": "^7.37.5",
+		"globals": "^16.4.0",
+		"jiti": "^2.6.1",
+		"typescript-eslint": "^8.46.2"
 	},
-  "scripts": {
-    "dev": "concurrently --names \"BACKEND,FRONTEND\" --prefix-colors \"cyan,magenta\" \"npm:dev --workspace=@myorg/backend\" \"npm:dev --workspace=@myorg/frontend\"",
-	"back": "concurrently --names \"BACKEND\" --prefix-colors \"cyan\" \"npm:dev --workspace=@myorg/backend\"",
-	"front": "concurrently --names \"FRONTEND\" --prefix-colors \"magenta\" \"npm:dev --workspace=@myorg/frontend\"",
-	"build_shared": "npm run build --workspace=@myorg/shared"
-  }
+	"scripts": {
+		"dev": "concurrently --names \"BACKEND,FRONTEND\" --prefix-colors \"cyan,magenta\" \"npm:dev --workspace=@myorg/backend\" \"npm:dev --workspace=@myorg/frontend\"",
+		"back": "concurrently --names \"BACKEND\" --prefix-colors \"cyan\" \"npm:dev --workspace=@myorg/backend\"",
+		"front": "concurrently --names \"FRONTEND\" --prefix-colors \"magenta\" \"npm:dev --workspace=@myorg/frontend\"",
+		"build_shared": "npm run build --workspace=@myorg/shared",
+		"lint": "npx eslint"
+	}
 }
