@@ -1,41 +1,50 @@
-const API_BASE_URL = "http://localhost:3000/v0/weeks";
+const API_BASE_URL = "http://localhost:3000/v1/day";
+import { IDay } from "@myorg/shared";
+import { get_week_days, formatLocalDate } from "@myorg/shared/src/util/DateUtils";
 
-export async function fetchWeeks() {
-	const res = await fetch(API_BASE_URL);
-	if (!res.ok) throw new Error("Failed to fetch weeks");
-	return res.json();
-}
-
-export async function fetchWeek(id: string) {
-	const res = await fetch(`${API_BASE_URL}/${id}`);
-	if (!res.ok) throw new Error("Failed to fetch week");
-	return res.json();
-}
-
-export async function updateWeek(id: string, week: any) {
-	const res = await fetch(`${API_BASE_URL}/${id}`, {
-		method: "PUT",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(week),
+export async function addMealToDay(date: Date): Promise<IDay> {
+	// Convert the date into an ISO string without the time part
+	const dateStr = date.toISOString().split("T")[0]; // e.g. "2025-10-22"
+		const res = await fetch(`${API_BASE_URL}/date/${dateStr}/newmeal`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
 	});
-	if (!res.ok) throw new Error("Failed to update week");
-	return res.json();
+	if (!res.ok) {
+		throw new Error(
+			`Failed to add meal to day: ${res.status} ${res.statusText}`
+		);
+	}
+	const mealData: IDay = await res.json();
+	return mealData;
 }
 
-export async function addMealToWeek(id: string, mealid: string, weekday: number) {
-	const res = await fetch(`${API_BASE_URL}/${id}/meals`, {
-		method: "PUT",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({ mealid, weekday }),
-	});
-	if (!res.ok) throw new Error("Failed to update week");
-	return res.json();
+export async function fetchWeekData(startDate: Date): Promise<IDay[]> {
+	const days = get_week_days(startDate);
+	const results = await Promise.all(days.map(fetchDayData));
+	return results;
 }
 
-export async function deleteMeal(weekId: string, mealId: string) {
-  const res = await fetch(`${API_BASE_URL}/${weekId}/meals/${mealId}`, {
-    method: 'DELETE',
-  });
-  if (!res.ok) throw new Error('Failed to delete meal');
-  return res.json();
+export async function fetchDayData(date: Date): Promise<IDay> { // I AM GOING TO KILL ANYBODY INVOLVED IN DATE STANDARDS
+	// Convert the date into an ISO string without the time part
+	
+	const dateStr = formatLocalDate(date); // e.g. "2025-10-22"
+
+	const res = await fetch(`${API_BASE_URL}/date/${dateStr}`);
+
+	if (!res.ok) {
+		throw new Error(`Failed to fetch day: ${res.status} ${res.statusText}`);
+	}
+	var data = await res.json();
+	var dayData: IDay = {} as IDay;
+	dayData.date = new Date(dateStr);
+	dayData.meals = [];
+
+	if (!data.empty) {
+		dayData.date = new Date(data.date as string);
+		dayData.meals = data.meals;
+	}
+
+	return dayData;
 }

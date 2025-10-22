@@ -7,7 +7,7 @@ const app = express();
 const PORT: string|number = process.env.PORT || 3000;
 
 const MONGO_URL = "mongodb://192.168.0.69:27017"; // hardcoded local mongo for now
-const DB_NAME = "foodtracker_2";
+const DB_NAME = "foodtracker_6"; // just add one every time you want to reset the db XD
 
 mongoose.connect(MONGO_URL + "/" + DB_NAME, {
 });

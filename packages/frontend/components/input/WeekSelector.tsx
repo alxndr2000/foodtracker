@@ -1,6 +1,6 @@
 import { Button, Text } from "react-native-paper";
 import { StyleSheet, View } from "react-native";
-import { format_week_range, normalize_date } from "@/util/DateUtils";
+import { format_week_range, normalize_date } from "@myorg/shared/src/util/DateUtils";
 
 export default function WeekSelector({
 	selectedWeek,

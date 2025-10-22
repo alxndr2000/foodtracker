@@ -1,19 +1,21 @@
 const { getDefaultConfig } = require("expo/metro-config");
+const path = require("path");
 
-const config = getDefaultConfig(__dirname);
+const projectRoot = __dirname;
+const monorepoRoot = path.resolve(projectRoot, "../..");
+const sharedPath = path.resolve(monorepoRoot, "packages/shared");
 
-// Add your shared package for transpilation
-config.resolver.nodeModulesPaths = [
-  "../shared",
-  "./node_modules"
-];
+const config = getDefaultConfig(projectRoot);
 
-config.transformer = {
-  ...config.transformer,
+// Tell Metro to resolve @myorg/shared to the shared package
+config.resolver.extraNodeModules = {
+  "@myorg/shared": sharedPath,
 };
 
-config.watchFolders = [
-  "../shared"
-];
+// Make sure TypeScript files are picked up
+config.resolver.sourceExts = [...config.resolver.sourceExts, "ts", "tsx"];
+
+// Watch the shared folder for changes
+config.watchFolders = [sharedPath];
 
 module.exports = config;
