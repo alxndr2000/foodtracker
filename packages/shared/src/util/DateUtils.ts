@@ -17,6 +17,13 @@ export function normalizeToUTC(date: Date) {
   return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
 }
 
+export function getOrdinalSuffix(n: number): string {
+  const suffixes = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  // non null assertion because one of the options will always match (hopefully)
+  return (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0])!;
+}
+
 /** Gets the Sunday of the given week, normalized to midnight */
 export function getWeekLastDay(startDate: Date): Date {
 	const cloned = normalizeDate(startDate);

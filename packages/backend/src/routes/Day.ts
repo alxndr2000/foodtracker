@@ -77,5 +77,37 @@ router.post("/date/:date/newmeal", async (req, res) => {
 	}
 });
 
+router.delete("/date/:date/:id", async (req, res) => {
+	try {
+		const { date: dateParam, id: mealId } = req.params;
+
+		if (!dateParam) {
+			return res
+				.status(400)
+				.json({ error: "Date parameter is required" });
+		}
+
+		if (!mealId) {
+			return res.status(400).json({ error: "ID parameter is required" });
+		}
+
+		const date = normalizeDate(new Date(dateParam));
+		if (isNaN(date.getTime()))
+			return res.status(400).json({ error: "Invalid date format" });
+
+		const dateUTC = normalizeToUTC(new Date(dateParam));
+		console.log("removed", dateUTC, dateParam);
+		const updatedDay = await DayModel.updateOne(
+			{ date: dateUTC },
+			{ $pull: { meals: { _id: mealId } } }
+		).lean();
+
+		res.json(updatedDay);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	} catch (err: any) {
+		console.error(err);
+		res.status(400).json({ error: err.message });
+	}
+});
 
 export default router;

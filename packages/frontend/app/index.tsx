@@ -1,7 +1,7 @@
 import WeekSelector from "@/components/input/WeekSelector";
 import WeekView from "@/components/views/WeekView";
 import { getCurrentWeek } from "@myorg/shared/src/util/DateUtils";
-import { addMealToDay, fetchWeekData } from "@/api/weeks";
+import { addMealToDay, fetchDayData, fetchWeekData } from "@/api/weeks";
 import { useState, useEffect } from "react";
 import { ScrollView } from "react-native";
 import {
@@ -23,7 +23,6 @@ export default function Index() {
 
 	async function addMeal(date: Date) {
 		try {
-			setLoading(true);
 			setError(null);
 
 			// Call the backend to add the meal
@@ -35,8 +34,42 @@ export default function Index() {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
 			setError(err.message || "Failed to add meal");
-		} finally {
-			setLoading(false);
+		}
+	}
+
+	async function refreshDay(date: Date) {
+		try {
+			setError(null);
+
+			const refreshedDay: IDay = await fetchDayData(date);
+
+			setDays((prevDays) => {
+				if (!prevDays) return [refreshedDay];
+
+				const dateStr = new Date(refreshedDay.date).toDateString();
+
+				// Check if day already exists
+				const dayExists = prevDays.some(
+					(d) => new Date(d.date).toDateString() === dateStr
+				);
+
+				if (dayExists) {
+					console.log("Refreshing existing day in state:", dateStr);
+					// Replace that day and force a new array reference
+					const newDays = prevDays.map((day) =>
+						new Date(day.date).toDateString() === dateStr
+							? { ...refreshedDay } // ensure a new object
+							: day
+					);
+					return [...newDays]; // return new array reference
+				} else {
+					// Add the new day if it's not in the list
+					return [...prevDays, refreshedDay];
+				}
+			});
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (err: any) {
+			setError(err.message || "Failed to refresh day");
 		}
 	}
 
@@ -82,7 +115,13 @@ export default function Index() {
 						/>
 					)}
 					{error && <Text style={{ color: "red" }}>{error}</Text>}
-					{days && <WeekView days={days} addMeal={addMeal} />}
+					{days && (
+						<WeekView
+							days={days}
+							addMeal={addMeal}
+							refreshDay={refreshDay}
+						/>
+					)}
 				</Surface>
 			</ScrollView>
 		</PaperProvider>

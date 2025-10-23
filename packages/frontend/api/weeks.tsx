@@ -1,5 +1,5 @@
 const API_BASE_URL = "http://localhost:3000/v1/day";
-import { IDay } from "@myorg/shared";
+import { IDay, IMeal } from "@myorg/shared";
 import { getWeekDays, formatLocalDate } from "@myorg/shared/src/util/DateUtils";
 
 export async function addMealToDay(date: Date): Promise<IDay> {
@@ -19,6 +19,26 @@ export async function addMealToDay(date: Date): Promise<IDay> {
 	const mealData: IDay = await res.json();
 	return mealData;
 }
+
+export async function deleteMeal(date: Date, mealID: IMeal["_id"]): Promise<JSON> {
+	// Convert the date into an ISO string without the time part
+	const dateStr = date.toISOString().split("T")[0]; // e.g. "2025-10-22"
+		const res = await fetch(`${API_BASE_URL}/date/${dateStr}/${mealID}`, {
+		method: "DELETE",
+		headers: {
+			"Content-Type": "application/json",
+		},
+	});
+	if (!res.ok) {
+		throw new Error(
+			`Failed to remove meal: ${res.status} ${res.statusText}`
+		);
+	}
+	const mealData: JSON = await res.json();
+	console.log(mealData)
+	return mealData;
+}
+
 
 export async function fetchWeekData(startDate: Date): Promise<IDay[]> {
 	const days = getWeekDays(startDate);

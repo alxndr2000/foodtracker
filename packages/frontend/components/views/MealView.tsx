@@ -1,19 +1,23 @@
-
 import { IMeal } from "@myorg/shared";
 import { View } from "react-native";
-import {
-	Button,
-	DataTable,
-	Divider,
-	Text,
-} from "react-native-paper";
+import { Button, DataTable, Divider, Text } from "react-native-paper";
 import React from "react";
+import { deleteMeal } from "@/api/weeks";
 
-export default function MealView({ meal }: { meal: IMeal }) {
+export default function MealView({
+	meal,
+	date,
+	refreshDay,
+}: {
+	meal: IMeal;
+	date: Date;
+	refreshDay: (date: Date) => void;
+}) {
+	
 	return (
 		<>
-			<Divider />
-			<Text variant="titleSmall">{meal.name}</Text>
+			<Divider style={{marginVertical: 10}} />
+			<Text variant="titleLarge">{meal.name}</Text>
 
 			<DataTable>
 				<DataTable.Header>
@@ -50,7 +54,19 @@ export default function MealView({ meal }: { meal: IMeal }) {
 					<Button mode="outlined" style={{ marginRight: 10 }}>
 						Load from recipe
 					</Button>
-					<Button mode="outlined" style={{ marginRight: 10 }}>
+
+					<Button
+						mode="outlined"
+						onPress={async () => {
+							try {
+								await deleteMeal(date, meal._id);
+								await refreshDay(date);
+							} catch (err) {
+								console.error("Error deleting meal:", err);
+							}
+						}}
+						style={{ marginRight: 10 }}
+					>
 						Delete
 					</Button>
 				</View>
