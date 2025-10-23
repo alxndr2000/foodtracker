@@ -49,13 +49,14 @@ export default function DayView({
 								/>
 						  ))
 						: null}
+					{visible ? (
 					<Button
 						mode="outlined"
 						onPress={() => addMeal(day.date)}
 						style={{ marginTop: 10 }}
 					>
 						Add Meal
-					</Button>
+					</Button> ) : null}
 				</Surface>
 			</View>
 		</>
