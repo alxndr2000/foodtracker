@@ -7,22 +7,24 @@ import React, { useState } from "react";
 import { getOrdinalSuffix } from "@myorg/shared/src/util/DateUtils";
 
 export default function DayView({
+	index,
 	day,
 	addMeal,
 	refreshDay,
 }: {
+	index: number
 	day: IDay;
 	addMeal: (date: Date) => void;
 	refreshDay: (date: Date) => void;
 }) {
-	const [visible, setVisible] = useState<boolean>(false);
+	const [visible, setVisible] = useState<boolean>(true);
 	const dayWord = `${day.date.toLocaleDateString("en-GB", {
 		weekday: "long",
 	})} ${day.date.getDate()}${getOrdinalSuffix(day.date.getDate())}`;
 	return (
 		<>
-			<View>
-				<Surface style={styles.surfaceInternal} elevation={2}>
+			<View style={{zIndex: -index}}>
+				<Surface style={[styles.surfaceInternal]} elevation={2}>
 					<View
 						style={{
 							flexDirection: "row",
@@ -53,7 +55,7 @@ export default function DayView({
 					<Button
 						mode="outlined"
 						onPress={() => addMeal(day.date)}
-						style={{ marginTop: 10 }}
+						style={{ marginTop: 10, zIndex: -1}}
 					>
 						Add Meal
 					</Button> ) : null}

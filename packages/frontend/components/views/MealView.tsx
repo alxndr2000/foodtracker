@@ -3,6 +3,7 @@ import { View } from "react-native";
 import { Button, DataTable, Divider, Text } from "react-native-paper";
 import React from "react";
 import { deleteMeal } from "@/api/weeks";
+import AddIngredientButton from "../buttons/AddIngredientButton";
 
 export default function MealView({
 	meal,
@@ -32,23 +33,15 @@ export default function MealView({
 						</DataTable.Cell>
 					</DataTable.Row>
 				))}
+				
+					<AddIngredientButton />
+					
 				<View
 					style={{
 						flexDirection: "row",
 						padding: 10,
 						alignItems: "center",
-					}}
-				>
-					<Button mode="outlined" style={{ marginRight: 10 }}>
-						Add Ingredient
-					</Button>
-					<Text>Dropdowns go here</Text>
-				</View>
-				<View
-					style={{
-						flexDirection: "row",
-						padding: 10,
-						alignItems: "center",
+						zIndex: -1
 					}}
 				>
 					<Button mode="outlined" style={{ marginRight: 10 }}>

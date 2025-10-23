@@ -13,7 +13,7 @@ export default function WeekView({
 	return (
 		<>
 			{days.map((day, index) => (
-				<DayView key={index} day={day} refreshDay={refreshDay} addMeal={addMeal} />
+				<DayView key={index} index={index} day={day} refreshDay={refreshDay} addMeal={addMeal} />
 			))}
 		</>
 	);
