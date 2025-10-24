@@ -1,7 +1,7 @@
 import WeekSelector from "@/components/input/WeekSelector";
 import WeekView from "@/components/views/WeekView";
 import { getCurrentWeek } from "@myorg/shared/src/util/DateUtils";
-import { addMealToDay, fetchDayData, fetchWeekData } from "@/api/weeks";
+import { addMealToDay, fetchDayData, fetchWeekData } from "@/api/days";
 import { useState, useEffect } from "react";
 import { ScrollView } from "react-native";
 import {
@@ -12,14 +12,16 @@ import {
 	MD3LightTheme as DefaultTheme,
 } from "react-native-paper";
 
-import { IDay } from "@myorg/shared";
+import { IDay, IIngredientType } from "@myorg/shared";
 import { styles } from "@/styles/styles";
+import { fetchAllIngredients } from "@/api/ingredients";
 
 export default function Index() {
 	const [selectedWeek, setSelectedWeek] = useState<Date>(getCurrentWeek());
 	const [days, setDays] = useState<IDay[] | null>(null);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [error, setError] = useState<string | null>(null);
+	const [ingredientList, setIngredientList] = useState<IIngredientType[]>([]);
 
 	async function addMeal(date: Date) {
 		try {
@@ -36,6 +38,18 @@ export default function Index() {
 			setError(err.message || "Failed to add meal");
 		}
 	}
+
+		useEffect(() => {
+			async function loadIngredients() {
+				try {
+					const ingredients = await fetchAllIngredients();
+					setIngredientList(ingredients);
+				} catch (err) {
+					console.error("Failed to load ingredients:", err);
+				}
+			}
+			loadIngredients();
+		}, []);
 
 	async function refreshDay(date: Date) {
 		try {
@@ -120,6 +134,7 @@ export default function Index() {
 							days={days}
 							addMeal={addMeal}
 							refreshDay={refreshDay}
+							ingredientList={ingredientList}
 						/>
 					)}
 				</Surface>

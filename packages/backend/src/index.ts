@@ -1,7 +1,8 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
-import weeksRouter from "./routes/Day";
+import dayRouter from "./routes/Day";
+import ingredientRouter from "./routes/Ingredient";
 
 const app = express();
 const PORT: string|number = process.env.PORT || 3000;
@@ -16,8 +17,9 @@ mongoose.connect(MONGO_URL + "/" + DB_NAME, {
 app.use(express.json());
 app.use(cors());
 
-
-app.use("/v1/day", weeksRouter);
+const API_VERSION = "/v1/"
+app.use(API_VERSION+"day", dayRouter);
+app.use(API_VERSION+"ingredient", ingredientRouter);
 
 // Start server
 app.listen(PORT, () => {

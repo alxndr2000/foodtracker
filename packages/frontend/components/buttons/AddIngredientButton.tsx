@@ -1,143 +1,64 @@
+import { IIngredientType, IMealIngredient } from "@myorg/shared";
 import {
-	IconButton,
-	Surface,
-	Text,
-	TextInput as PaperTextInput,
-} from "react-native-paper";
-import { TextInput } from "react-native";
-import { Pressable, View } from "react-native";
+	SearchableDropdown,
+	SearchableDropdownProps,
+} from "../dropdowns/SearchableDropdown";
+import { View } from "react-native";
+import { TextInput, IconButton } from "react-native-paper";
 import { useState } from "react";
 
-export default function AddIngredientButton() {
-	const [dropdownVisible, setDropdownVisible] = useState<boolean>(false);
-	const [activeIngredient, setActiveIngredient] = useState<string>("");
-	const [filterString, setFilterString] = useState<string>("");
-	const [searchMode, setSearchMode] = useState<boolean>(true);
-	const data = ["eggs", "potatoes", "nathan", "beans", "rice", "pasta"];
-
-	function endInput(newActiveIngredient: string) {
-		setActiveIngredient(newActiveIngredient);
-		setDropdownVisible(false);
-        setSearchMode(false)
+export default function AddIngredientButton({
+	ingredientList,
+}: {
+	ingredientList: IIngredientType[];
+}) {
+	const [activeIngredient, setActiveIngredient] = useState<IIngredientType>();
+	const [amountValue, setAmountValue] = useState<string>("");
+	function transformDropdownData(): SearchableDropdownProps["data"] {
+		const data: SearchableDropdownProps["data"] = [];
+		ingredientList.map((value) =>
+			data.push({ text: value.name, returnObject: value })
+		);
+		return data;
 	}
-	function getFirstDropdownItem() {
-		return data.filter((value) =>
-			value.toLowerCase().startsWith(filterString.toLowerCase())
-		)[0];
+	function addIngredient() {
+		if (!activeIngredient || !activeIngredient._id || amountValue == "") {
+			console.log("missing data for addIngredient");
+			return;
+		}
+		const newMealIngredient: IMealIngredient = {
+			ingredientTypeID: activeIngredient._id,
+			quantity: parseInt(amountValue),
+		};
+		setAmountValue("");
+		console.log(newMealIngredient); //TODO send to server and update ui
 	}
-
 	return (
 		<View
 			style={{
+				marginRight: 5,
+				zIndex: 999,
 				flexDirection: "row",
 				padding: 10,
 				alignItems: "center",
 			}}
 		>
-			<View style={{ marginRight: 5, flex: 3, zIndex: 999 }}>
-				<Pressable onPress={() => setDropdownVisible(true)}>
-					<Surface
-						style={{
-							height: 55,
-							justifyContent: "flex-start",
-							alignItems: "center",
-							flexDirection: "row",
-						}}
-					>
-						<IconButton
-							icon={
-								dropdownVisible ? "chevron-up" : "chevron-down"
-							}
-							onPress={() => {
-								setDropdownVisible(!dropdownVisible);
-							}}
-						/>
-						<TextInput
-							style={{ padding: 10, height: "100%" }}
-                            value={searchMode ? filterString : activeIngredient}
-                            placeholder="Search Ingredients..."
-							onChangeText={(text) => {
-								if (searchMode) {
-                                    setDropdownVisible(true)
-									setFilterString(text);
-								}
-							}}
-                            onKeyPress={(e) => {
-                                const key = e.nativeEvent.key
-                                if (key=="Enter" || key=="Tab") {
-                                    endInput(getFirstDropdownItem())
-                                }
-                            }}
-                            onFocus={() => {
-                                setDropdownVisible(true)
-                                setFilterString("")
-                                setSearchMode(true)
-                            }}
-						/>
-					</Surface>
-				</Pressable>
-				{dropdownVisible ? (
-					<Surface
-						elevation={3}
-						style={{
-							position: "absolute",
-							width: "100%",
-							padding: 10,
-							backgroundColor: "white",
-							zIndex: 999,
-							top: "100%",
-							borderBottomLeftRadius: 10,
-							borderBottomRightRadius: 10,
-						}}
-					>
-						{data
-							.filter((value) =>
-								value
-									.toLowerCase()
-									.startsWith(filterString.toLowerCase())
-							)
-							.map((value, index) => (
-								<TextButton
-									key={index}
-									onSelect={() => {
-										endInput(value)
-									}}
-									textContent={value}
-								/>
-							))}
-					</Surface>
-				) : null}
+			<View style={{ flex: 3 }}>
+				<SearchableDropdown
+					data={transformDropdownData()}
+					submitCallback={setActiveIngredient}
+				/>
 			</View>
-			<PaperTextInput style={{ marginRight: 5, flex: 1 }} />
-			<IconButton icon="plus" onPress={() => console.log(activeIngredient)} />
+			<TextInput
+				keyboardType="numeric"
+				value={amountValue}
+				onChangeText={(text) => {
+					setAmountValue(text.replace(/[^0-9]/g, ""));
+				}}
+				placeholder="Amount"
+				style={{ marginLeft: 5, flex: 1 }}
+			/>
+			<IconButton icon="plus" onPress={addIngredient} />
 		</View>
-	);
-}
-
-function TextButton({
-	onSelect,
-	textContent,
-}: {
-	onSelect: () => void;
-	textContent: string;
-}) {
-	const [isHovered, setIsHovered] = useState(false);
-	return (
-		<Pressable
-			focusable={true}
-			onFocus={() => {
-				onSelect();
-			}}
-			onHoverIn={() => setIsHovered(true)}
-			onHoverOut={() => setIsHovered(false)}
-			style={{
-				backgroundColor: isHovered ? "#d1e0ff" : "#ffffff", // light blue on hover
-				padding: 10,
-				borderRadius: 6,
-				marginVertical: 4,
-			}}
-		>
-			<Text>{textContent}</Text>
-		</Pressable>
 	);
 }

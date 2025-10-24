@@ -1,7 +1,7 @@
 import { styles } from "@/styles/styles";
 import { View } from "react-native";
 import { Button, Surface, Text } from "react-native-paper";
-import { IDay } from "@myorg/shared";
+import { IDay, IIngredientType } from "@myorg/shared";
 import MealView from "./MealView";
 import React, { useState } from "react";
 import { getOrdinalSuffix } from "@myorg/shared/src/util/DateUtils";
@@ -11,11 +11,13 @@ export default function DayView({
 	day,
 	addMeal,
 	refreshDay,
+	ingredientList,
 }: {
 	index: number
 	day: IDay;
 	addMeal: (date: Date) => void;
 	refreshDay: (date: Date) => void;
+	ingredientList: IIngredientType[];
 }) {
 	const [visible, setVisible] = useState<boolean>(true);
 	const dayWord = `${day.date.toLocaleDateString("en-GB", {
@@ -48,6 +50,7 @@ export default function DayView({
 									meal={meal}
 									refreshDay={refreshDay}
 									date={day.date}
+									ingredientList={ingredientList}
 								/>
 						  ))
 						: null}

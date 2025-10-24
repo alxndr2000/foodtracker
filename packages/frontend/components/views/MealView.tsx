@@ -1,18 +1,20 @@
-import { IMeal } from "@myorg/shared";
+import { IIngredientType, IMeal } from "@myorg/shared";
 import { View } from "react-native";
 import { Button, DataTable, Divider, Text } from "react-native-paper";
 import React from "react";
-import { deleteMeal } from "@/api/weeks";
+import { deleteMeal } from "@/api/days";
 import AddIngredientButton from "../buttons/AddIngredientButton";
 
 export default function MealView({
 	meal,
 	date,
 	refreshDay,
+	ingredientList,
 }: {
 	meal: IMeal;
 	date: Date;
 	refreshDay: (date: Date) => void;
+	ingredientList: IIngredientType[];
 }) {
 	
 	return (
@@ -34,7 +36,7 @@ export default function MealView({
 					</DataTable.Row>
 				))}
 				
-					<AddIngredientButton />
+					<AddIngredientButton ingredientList={ingredientList} />
 					
 				<View
 					style={{
