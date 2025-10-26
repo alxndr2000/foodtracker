@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import { DayModel } from "../models/Day";
-import { IMeal } from "@myorg/shared";
+import { IMeal, IMealIngredient } from "@myorg/shared";
 import {
 	normalizeDate,
 	normalizeToUTC,
@@ -77,9 +77,69 @@ router.post("/date/:date/newmeal", async (req, res) => {
 	}
 });
 
-router.delete("/date/:date/:id", async (req, res) => {
+// add ingredient to meal by date and mealid
+
+router.post("/:date/:meal/", async (req, res) => {
 	try {
-		const { date: dateParam, id: mealId } = req.params;
+		const { date: dateParam, meal: mealId } = req.params;
+		const ingredientData = req.body as IMealIngredient;
+
+		if (!dateParam)
+			return res
+				.status(400)
+				.json({ error: "Date parameter is required" });
+
+		if (!mealId)
+			return res
+				.status(400)
+				.json({ error: "Meal ID parameter is required" });
+
+		const date = normalizeDate(new Date(dateParam));
+		if (isNaN(date.getTime()))
+			return res.status(400).json({ error: "Invalid date format" });
+
+		const dateUTC = normalizeToUTC(new Date(dateParam));
+
+		// Log input for debugging
+		console.log(
+			"Adding ingredient",
+			ingredientData,
+			"to",
+			mealId,
+			"on",
+			dateUTC
+		);
+
+		// Update: find the Day by date, and push the new ingredient into the correct meal
+		const updatedDay = await DayModel.findOneAndUpdate(
+			{
+				date: dateUTC,
+				"meals._id": mealId, // find the correct meal within that day
+			},
+			{
+				$push: { "meals.$.ingredients": ingredientData },
+			},
+			{
+				new: true, // return updated doc
+				upsert: true, // create if not exists
+			}
+		).lean();
+
+		if (!updatedDay)
+			return res.status(404).json({ error: "Day or meal not found" });
+
+		res.json(updatedDay);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	} catch (err: any) {
+		console.error(err);
+		res.status(400).json({ error: err.message });
+	}
+});
+
+// remove meal by id from date
+router.delete("/date/:date/:meal", async (req, res) => {
+	try {
+		const { date: dateParam, meal: mealId } = req.params;
 
 		if (!dateParam) {
 			return res

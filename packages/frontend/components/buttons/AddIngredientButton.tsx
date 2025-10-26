@@ -1,4 +1,4 @@
-import { IIngredientType, IMealIngredient } from "@myorg/shared";
+import { IIngredientType, IMeal, IMealIngredient } from "@myorg/shared";
 import {
 	SearchableDropdown,
 	SearchableDropdownProps,
@@ -6,11 +6,18 @@ import {
 import { View } from "react-native";
 import { TextInput, IconButton } from "react-native-paper";
 import { useState } from "react";
+import { addIngredientToMeal } from "@/api/days";
 
 export default function AddIngredientButton({
 	ingredientList,
+	date,
+	meal,
+	refreshDay
 }: {
 	ingredientList: IIngredientType[];
+	date: Date,
+	meal: IMeal,
+	refreshDay: (date: Date) => void
 }) {
 	const [activeIngredient, setActiveIngredient] = useState<IIngredientType>();
 	const [amountValue, setAmountValue] = useState<string>("");
@@ -21,7 +28,7 @@ export default function AddIngredientButton({
 		);
 		return data;
 	}
-	function addIngredient() {
+	async function addIngredient() {
 		if (!activeIngredient || !activeIngredient._id || amountValue == "") {
 			console.log("missing data for addIngredient");
 			return;
@@ -31,8 +38,11 @@ export default function AddIngredientButton({
 			quantity: parseInt(amountValue),
 		};
 		setAmountValue("");
-		console.log(newMealIngredient); //TODO send to server and update ui
+		console.log(newMealIngredient, meal._id, date); //TODO send to server and update ui
+		await addIngredientToMeal(date, meal._id, newMealIngredient)
+		await refreshDay(date)
 	}
+
 	return (
 		<View
 			style={{

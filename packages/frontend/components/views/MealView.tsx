@@ -1,4 +1,4 @@
-import { IIngredientType, IMeal } from "@myorg/shared";
+import { IIngredientType, IMeal, IMealIngredient } from "@myorg/shared";
 import { View } from "react-native";
 import { Button, DataTable, Divider, Text } from "react-native-paper";
 import React from "react";
@@ -16,7 +16,18 @@ export default function MealView({
 	refreshDay: (date: Date) => void;
 	ingredientList: IIngredientType[];
 }) {
-	
+	function findNameFromIngredientList(ingredientTypeID: IMealIngredient["ingredientTypeID"]) {
+		const ingredient = ingredientList.find((ingredient) => (
+			ingredient._id==ingredientTypeID
+		))
+		return ingredient?.name
+	}
+	function findUnitFromIngredientList(ingredientTypeID: IMealIngredient["ingredientTypeID"]) {
+		const ingredient = ingredientList.find((ingredient) => (
+			ingredient._id==ingredientTypeID
+		))
+		return ingredient?.unit
+	}
 	return (
 		<>
 			<Divider style={{marginVertical: 10}} />
@@ -29,14 +40,14 @@ export default function MealView({
 				</DataTable.Header>
 				{meal.ingredients.map((ingredient, index) => (
 					<DataTable.Row key={index}>
-						<DataTable.Cell>{ingredient.name}</DataTable.Cell>
+						<DataTable.Cell>{findNameFromIngredientList(ingredient.ingredientTypeID)}</DataTable.Cell>
 						<DataTable.Cell numeric>
-							{ingredient.quantity} {ingredient.unit}
+							{ingredient.quantity} {findUnitFromIngredientList(ingredient.ingredientTypeID)}
 						</DataTable.Cell>
 					</DataTable.Row>
 				))}
 				
-					<AddIngredientButton ingredientList={ingredientList} />
+					<AddIngredientButton meal={meal} date={date} ingredientList={ingredientList} refreshDay={refreshDay} />
 					
 				<View
 					style={{
@@ -46,9 +57,9 @@ export default function MealView({
 						zIndex: -1
 					}}
 				>
-					<Button mode="outlined" style={{ marginRight: 10 }}>
+					{/* <Button mode="outlined" style={{ marginRight: 10 }}>
 						Load from recipe
-					</Button>
+					</Button> */}
 
 					<Button
 						mode="outlined"

@@ -1,5 +1,5 @@
 const API_BASE_URL = "http://localhost:3000/v1/day";
-import { IDay, IMeal } from "@myorg/shared";
+import { IDay, IMeal, IMealIngredient } from "@myorg/shared";
 import { getWeekDays, formatLocalDate } from "@myorg/shared/src/util/DateUtils";
 
 export async function addMealToDay(date: Date): Promise<IDay> {
@@ -39,6 +39,32 @@ export async function deleteMeal(date: Date, mealID: IMeal["_id"]): Promise<JSON
 	return mealData;
 }
 
+export async function addIngredientToMeal(
+	date: Date,
+	mealID: IMeal["_id"],
+	ingredient: IMealIngredient
+): Promise<IDay> {
+	// format date consistently with your other calls (YYYY-MM-DD)
+	const dateStr = formatLocalDate(date);
+
+	const res = await fetch(`${API_BASE_URL}/${dateStr}/${mealID}`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(ingredient),
+	});
+
+	if (!res.ok) {
+		const text = await res.text().catch(() => "");
+		throw new Error(
+			`Failed to add ingredient: ${res.status} ${res.statusText} ${text}`
+		);
+	}
+
+	const updatedDay: IDay = await res.json();
+	return updatedDay;
+}
 
 export async function fetchWeekData(startDate: Date): Promise<IDay[]> {
 	const days = getWeekDays(startDate);
