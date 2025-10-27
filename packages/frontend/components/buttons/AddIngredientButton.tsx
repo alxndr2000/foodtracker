@@ -66,7 +66,7 @@ export default function AddIngredientButton({
 					setAmountValue(text.replace(/[^0-9]/g, ""));
 				}}
 				placeholder="Amount"
-				style={{ marginLeft: 5, flex: 1 }}
+				style={{ marginLeft: 10, flex: 1 }}
 			/>
 			<IconButton icon="plus" onPress={addIngredient} />
 		</View>

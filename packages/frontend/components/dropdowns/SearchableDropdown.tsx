@@ -1,14 +1,12 @@
 import React, { useState } from "react";
-import { View, Pressable, TextInput, Text } from "react-native";
-import {
-	Surface,
-	IconButton,
-} from "react-native-paper";
+import { View, Pressable } from "react-native";
+import { TextInput, Text } from "react-native-paper";
+import { Surface, IconButton } from "react-native-paper";
 
 interface IDropdownData {
-    text: string,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    returnObject: any // allowed to be any because it will be returned 
+	text: string;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	returnObject: any; // allowed to be any because it will be returned
 }
 export interface SearchableDropdownProps {
 	data: IDropdownData[];
@@ -20,9 +18,11 @@ export function SearchableDropdown({
 	data,
 	submitCallback,
 }: SearchableDropdownProps) {
-
 	const [dropdownVisible, setDropdownVisible] = useState<boolean>(false);
-	const [activeValue, setactiveValue] = useState<IDropdownData>({text: "", returnObject: null});
+	const [activeValue, setactiveValue] = useState<IDropdownData>({
+		text: "",
+		returnObject: null,
+	});
 	const [filterString, setFilterString] = useState<string>("");
 	const [searchMode, setSearchMode] = useState<boolean>(true);
 
@@ -30,7 +30,7 @@ export function SearchableDropdown({
 		setactiveValue(returnedData);
 		setDropdownVisible(false);
 		setSearchMode(false);
-		submitCallback(returnedData.returnObject)
+		submitCallback(returnedData.returnObject);
 	}
 	function getFirstDropdownItem() {
 		return data.filter((value) =>
@@ -40,11 +40,9 @@ export function SearchableDropdown({
 
 	return (
 		<View>
-		
 			<Pressable onPress={() => setDropdownVisible(true)}>
 				<Surface
 					style={{
-						height: 55,
 						justifyContent: "flex-start",
 						alignItems: "center",
 						flexDirection: "row",
@@ -57,7 +55,18 @@ export function SearchableDropdown({
 						}}
 					/>
 					<TextInput
-						style={{ padding: 10, height: "100%" }}
+						style={{
+							padding: 0,
+							height: "100%",
+							width: "100%",
+							flex: 1,
+						}}
+						outlineStyle={{
+							borderWidth: 0,
+							borderTopLeftRadius: 0,
+							borderBottomLeftRadius: 0,
+						}}
+						mode="outlined"
 						value={searchMode ? filterString : activeValue.text}
 						placeholder="Search Ingredients..."
 						onChangeText={(text) => {
@@ -87,7 +96,6 @@ export function SearchableDropdown({
 						position: "absolute",
 						width: "100%",
 						padding: 10,
-						backgroundColor: "white",
 						zIndex: 999,
 						top: "100%",
 						borderBottomLeftRadius: 10,
@@ -112,7 +120,7 @@ export function SearchableDropdown({
 				</Surface>
 			) : null}
 		</View>
-		)
+	);
 }
 
 function TextButton({
@@ -132,13 +140,18 @@ function TextButton({
 			onHoverIn={() => setIsHovered(true)}
 			onHoverOut={() => setIsHovered(false)}
 			style={{
-				backgroundColor: isHovered ? "#d1e0ff" : "#ffffff", // light blue on hover
 				padding: 10,
 				borderRadius: 6,
 				marginVertical: 4,
 			}}
 		>
-			<Text>{textContent}</Text>
+			{isHovered ? (
+				<Text>
+					<b>{textContent}</b>
+				</Text>
+			) : (
+				<Text>{textContent}</Text>
+			)}
 		</Pressable>
 	);
 }

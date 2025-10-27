@@ -21,7 +21,7 @@ export const styles = StyleSheet.create({
          // limit max width for better readability on large screens
 	},
 	surfaceMain: {
-		minWidth: 520,
+		minWidth: 600,
         maxWidth: 600,
 		padding: 20,
         alignSelf: "center",

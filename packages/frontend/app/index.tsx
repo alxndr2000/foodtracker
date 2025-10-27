@@ -3,13 +3,10 @@ import WeekView from "@/components/views/WeekView";
 import { getCurrentWeek } from "@myorg/shared/src/util/DateUtils";
 import { addMealToDay, fetchDayData, fetchWeekData } from "@/api/days";
 import { useState, useEffect } from "react";
-import { ScrollView } from "react-native";
 import {
 	ActivityIndicator,
-	PaperProvider,
 	Surface,
 	Text,
-	MD3LightTheme as DefaultTheme,
 } from "react-native-paper";
 
 import { IDay, IIngredientType } from "@myorg/shared";
@@ -39,17 +36,17 @@ export default function Index() {
 		}
 	}
 
-		useEffect(() => {
-			async function loadIngredients() {
-				try {
-					const ingredients = await fetchAllIngredients();
-					setIngredientList(ingredients);
-				} catch (err) {
-					console.error("Failed to load ingredients:", err);
-				}
+	useEffect(() => {
+		async function loadIngredients() {
+			try {
+				const ingredients = await fetchAllIngredients();
+				setIngredientList(ingredients);
+			} catch (err) {
+				console.error("Failed to load ingredients:", err);
 			}
-			loadIngredients();
-		}, []);
+		}
+		loadIngredients();
+	}, []);
 
 	async function refreshDay(date: Date) {
 		try {
@@ -115,30 +112,23 @@ export default function Index() {
 	}, [selectedWeek]);
 
 	return (
-		<PaperProvider theme={DefaultTheme}>
-			<ScrollView contentContainerStyle={styles.scrollContent}>
-				<Surface style={styles.surfaceMain} elevation={1}>
-					<WeekSelector
-						selectedWeek={selectedWeek}
-						onChangeWeek={setSelectedWeek}
-					/>
-					{loading && (
-						<ActivityIndicator
-							size="large"
-							style={{ marginTop: 20 }}
-						/>
-					)}
-					{error && <Text style={{ color: "red" }}>{error}</Text>}
-					{days && (
-						<WeekView
-							days={days}
-							addMeal={addMeal}
-							refreshDay={refreshDay}
-							ingredientList={ingredientList}
-						/>
-					)}
-				</Surface>
-			</ScrollView>
-		</PaperProvider>
+		<Surface style={styles.surfaceMain} elevation={1}>
+			<WeekSelector
+				selectedWeek={selectedWeek}
+				onChangeWeek={setSelectedWeek}
+			/>
+			{loading && (
+				<ActivityIndicator size="large" style={{ marginTop: 20 }} />
+			)}
+			{error && <Text style={{ color: "red" }}>{error}</Text>}
+			{days && (
+				<WeekView
+					days={days}
+					addMeal={addMeal}
+					refreshDay={refreshDay}
+					ingredientList={ingredientList}
+				/>
+			)}
+		</Surface>
 	);
 }

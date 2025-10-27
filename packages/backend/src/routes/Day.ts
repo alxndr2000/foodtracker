@@ -35,7 +35,7 @@ router.get("/date/:date", async (req: Request, res: Response) => {
 		}
 
 		const day = await DayModel.findOne({ date: dateUTC }).lean();
-		console.log("got ", dateUTC, dateParam);
+		console.log("got ", dateParam);
 		if (!day) {
 			return res.json({ empty: true });
 		}
@@ -79,7 +79,7 @@ router.post("/date/:date/newmeal", async (req, res) => {
 
 // add ingredient to meal by date and mealid
 
-router.post("/:date/:meal/", async (req, res) => {
+router.post("/date/:date/:meal/", async (req, res) => {
 	try {
 		const { date: dateParam, meal: mealId } = req.params;
 		const ingredientData = req.body as IMealIngredient;
@@ -107,7 +107,7 @@ router.post("/:date/:meal/", async (req, res) => {
 			"to",
 			mealId,
 			"on",
-			dateUTC
+			dateParam
 		);
 
 		// Update: find the Day by date, and push the new ingredient into the correct meal
@@ -156,7 +156,7 @@ router.delete("/date/:date/:meal", async (req, res) => {
 			return res.status(400).json({ error: "Invalid date format" });
 
 		const dateUTC = normalizeToUTC(new Date(dateParam));
-		console.log("removed", dateUTC, dateParam);
+		console.log("removed meal", mealId, "on", dateParam);
 		const updatedDay = await DayModel.updateOne(
 			{ date: dateUTC },
 			{ $pull: { meals: { _id: mealId } } }

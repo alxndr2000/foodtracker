@@ -47,7 +47,7 @@ export async function addIngredientToMeal(
 	// format date consistently with your other calls (YYYY-MM-DD)
 	const dateStr = formatLocalDate(date);
 
-	const res = await fetch(`${API_BASE_URL}/${dateStr}/${mealID}`, {
+	const res = await fetch(`${API_BASE_URL}/date/${dateStr}/${mealID}`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
